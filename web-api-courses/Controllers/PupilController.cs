@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Courses.Core.Servises;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Xml.Linq;
 using web_api_courses.Entities;
@@ -11,62 +12,50 @@ namespace web_api_courses.Controllers
     [ApiController]
     public class PupilController : ControllerBase
     {
-        private static List<Pupil> pupils = new List<Pupil>();
-        static int count=0;
+        private readonly IPupilService _pupilService;
+        public PupilController(IPupilService pupilService)
+        {
+            _pupilService = pupilService;
+        }
+
         // GET: api/<PupilController>
         [HttpGet]
         public List<Pupil> Get()
         {
-            return pupils;
+            return _pupilService.GetAll();
         }
 
         // GET api/<PupilController>/5
         [HttpGet("{id}")]
         public Pupil Get(int id)
         {
-            Pupil? pupil = pupils.Find(p => p.Id == id);
-            if (pupil == null)
-                throw new Exception("404");
-            return pupil;
+            return _pupilService.GetById(id);
         }
 
         // POST api/<PupilController>
         [HttpPost]
         public void Post([FromBody] Pupil pupil)
         {
-            pupil.Id = ++count;
-            pupils.Add(pupil);
+            _pupilService.Post(pupil);
         }
 
         // PUT api/<PupilController>/5
         [HttpPut("{id}")]
         public void Put(int id, [FromBody] Pupil pupil)
         {
-            Pupil? res = pupils.Find(p => p.Id == id);
-            if (res == null)
-                throw new Exception("404");
-            res.Name = pupil.Name;
-            res.Address = pupil.Address;
-            res.Age=pupil.Age;
-            res.Phone = pupil.Phone;
+            _pupilService.Put(id, pupil);
         }
         // PUT api/<PupilController>/5/age
         [HttpPut("{id}/age")]
         public void Put(int id)
         {
-            Pupil? res = pupils.Find(p => p.Id == id);
-            if (res == null)
-                throw new Exception("404");
-            res.Age++;
+           _pupilService.AddYear(id);
         }
         // DELETE api/<PupilController>/5
         [HttpDelete("{id}")]
         public void Delete(int id)
         {
-            Pupil? pupil = pupils.Find(c => c.Id == id);
-            if (pupil == null)
-                throw new Exception("404");
-            pupils.Remove(pupil);
+           _pupilService.Delete(id);
         }
     }
 }

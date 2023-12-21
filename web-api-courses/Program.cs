@@ -1,3 +1,9 @@
+using Courses.Core.Repositories;
+using Courses.Core.Servises;
+using Courses.Data;
+using Courses.Data.Repositories;
+using Courses.Service;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -7,6 +13,15 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddScoped<ICourseService,CourseService>();
+builder.Services.AddScoped<ILectureService, LectureService>();
+builder.Services.AddScoped<IPupilService, PupilService>();
+
+builder.Services.AddScoped<ICourseRepository, CourseRepository>();
+builder.Services.AddScoped<ILectureRepository, LectureRepository>();
+builder.Services.AddScoped<IPupilRepository, PupilRepository>();
+
+builder.Services.AddSingleton<DataContext>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

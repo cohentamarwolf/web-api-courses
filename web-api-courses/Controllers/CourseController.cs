@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Courses.Core.Servises;
+using Microsoft.AspNetCore.Mvc;
 using web_api_courses.Entities;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -9,53 +10,44 @@ namespace web_api_courses.Controllers
     [ApiController]
     public class CourseController : ControllerBase
     {
-        private static List<Course> courses=new List<Course>();
-        static int count = 0;
-        // GET: api/<CourseController>/5/?
+        private readonly ICourseService _courseService;
+        public CourseController(ICourseService courseService)
+        {
+            _courseService = courseService;
+        }
+
+         // GET: api/<CourseController>/5/?
         [HttpGet]
         public List<Course> Get(string? name, int? age)
         {
-            return courses.Where(c => (c.Name == name || name== null) && (c.Age >= age || age == null)).ToList();
+            return _courseService.GetAll(name,age);
         }
         // GET api/<CourseController>/5
         [HttpGet("{id}")]
         public Course Get(int id)
         {
-            Course? course = courses.Find(c => c.Id == id);
-            if (course == null)
-                throw new Exception("404");
-            return course;
+            return _courseService.GetById(id);
         }
 
         // POST api/<CourseController>
         [HttpPost]
         public void Post([FromBody] Course course)
         {
-            course.Id = ++count;
-            courses.Add(course);
+            _courseService.Post(course);
         }
 
         // PUT api/<CourseController>/5
         [HttpPut("{id}")]
         public void Put(int id, [FromBody] Course course)
         {
-            Course? res = courses.Find(c => c.Id == id);
-            if (res == null)
-                throw new Exception("404");
-            res.Name = course.Name;
-            res.Address = course.Address;
-            res.MeetingNum = course.MeetingNum;
-            res.Age = course.Age;
+            _courseService.Put(id, course);
         }
 
         // DELETE api/<CourseController>/5
         [HttpDelete("{id}")]
         public void Delete(int id)
         {
-            Course? course = courses.Find(c => c.Id == id);
-            if (course == null)
-                throw new Exception("404");
-            courses.Remove(course);
+            _courseService.Delete(id);
         }
     }
 }
